@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.TextView
 import android.widget.Toast
@@ -13,43 +12,32 @@ import android.widget.Toast
 
 class MainActivity : AppCompatActivity() {
     private var headphoneStatusReceiver: HeadphoneStatusIntentReceiver? = null
+    private val headsetFilter = IntentFilter(Intent.ACTION_HEADSET_PLUG)
+
+    private fun updateTextView() {
+        findViewById<TextView>(R.id.activity_main_headphone_status).text =
+            headphoneStatusReceiver!!.getStatusText()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setupReceivers()
-        updateTextViews()
-    }
-
-    private fun setupReceivers() {
-        val headsetFilter = IntentFilter(Intent.ACTION_HEADSET_PLUG)
-
-        if (headphoneStatusReceiver == null) {
-            headphoneStatusReceiver = HeadphoneStatusIntentReceiver()
-        }
-
+        headphoneStatusReceiver = HeadphoneStatusIntentReceiver()
         registerReceiver(headphoneStatusReceiver, headsetFilter)
-    }
-
-    private fun teardownReceivers() {
-        unregisterReceiver(headphoneStatusReceiver)
-    }
-
-    private fun updateTextViews() {
-        val headphoneView: TextView = findViewById(R.id.activity_main_headphone_status)
-        headphoneView.text = headphoneStatusReceiver!!.getStatusText()
+        updateTextView()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        teardownReceivers()
+        unregisterReceiver(headphoneStatusReceiver)
     }
 
     override fun onResume() {
         super.onResume()
-        setupReceivers()
-        updateTextViews()
+        registerReceiver(headphoneStatusReceiver, headsetFilter)
+        updateTextView()
     }
+
     inner class HeadphoneStatusIntentReceiver : BroadcastReceiver() {
 
         private var statusText: String? = null
@@ -63,11 +51,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onReceive(context: Context, intent: Intent) {
-            if(intent.action == Intent.ACTION_HEADSET_PLUG) {
+            if (intent.action == Intent.ACTION_HEADSET_PLUG) {
                 val state = parseHeadsetPlugState(intent, context)
                 setStatusText(state)
                 //      TODO: make a setting option for show toast
-                updateTextViews()
+                updateTextView()
                 showHeadphoneStatusToast(context)
             }
         }
@@ -80,27 +68,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
         fun showHeadphoneStatusToast(context: Context) {
             val duration = Toast.LENGTH_SHORT
             val toast = Toast.makeText(context, getStatusText(), duration)
             toast.show()
         }
     }
-//
-//    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        menuInflater.inflate(R.menu.menu_main, menu)
-//        return true
-//    }
-//
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        return when (item.itemId) {
-//            R.id.action_settings -> true
-//            else -> super.onOptionsItemSelected(item)
-//        }
-//    }
 }
