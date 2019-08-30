@@ -1,3 +1,5 @@
+package com.frankmassi.headphonechecker
+
 //package com.frankmassi.headphonechecker
 //
 //import android.appwidget.AppWidgetManager
