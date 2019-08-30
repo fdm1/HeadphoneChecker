@@ -3,31 +3,47 @@ package com.frankmassi.headphonechecker
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
-import android.view.Menu
-import android.view.MenuItem
-
-import kotlinx.android.synthetic.main.activity_main.*
+import android.widget.TextView
 
 class MainActivity : AppCompatActivity() {
-    private var myReceiver: MusicIntentReceiver? = null
+    private var headphoneStatusReceiver: HeadphoneStatusIntentReceiver? = null
+    private var chargingStatusReceiver: ChargingStatusReceiver? = null
+    val headsetFilter = IntentFilter(Intent.ACTION_HEADSET_PLUG)
+    val chargingFilter = IntentFilter(Intent.ACTION_POWER_CONNECTED)
+
+    val headphoneTextView: TextView = findViewById(R.id.activity_main_headphone_status)
+    val chargingTextView: TextView = findViewById(R.id.activity_main_charging_status)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        myReceiver = MusicIntentReceiver()
-//        setSupportActionBar(toolbar)
-//
-//        fab.setOnClickListener { view ->
-//            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                .setAction("Action", null).show()
-//        }
+        headphoneStatusReceiver = HeadphoneStatusIntentReceiver()
+        chargingStatusReceiver = ChargingStatusReceiver()
+        registerReceiver(headphoneStatusReceiver, headsetFilter)
+        registerReceiver(chargingStatusReceiver, chargingFilter)
+
+        findViewById<TextView>(R.id.activity_main_headphone_status)
+            .setText(headphoneStatusReceiver!!.getStatusText())
+        findViewById<TextView>(R.id.activity_main_charging_status)
+            .setText(chargingStatusReceiver!!.getStatusText())
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(headphoneStatusReceiver)
+        unregisterReceiver(chargingStatusReceiver)
+    }
+
     override fun onResume() {
-        val filter = IntentFilter(Intent.ACTION_HEADSET_PLUG)
-        registerReceiver(myReceiver, filter)
         super.onResume()
+        registerReceiver(headphoneStatusReceiver, headsetFilter)
+        registerReceiver(chargingStatusReceiver, chargingFilter)
+
+        findViewById<TextView>(R.id.activity_main_headphone_status)
+            .setText(headphoneStatusReceiver!!.getStatusText())
+        findViewById<TextView>(R.id.activity_main_charging_status)
+            .setText(chargingStatusReceiver!!.getStatusText())
     }
 //
 //    override fun onCreateOptionsMenu(menu: Menu): Boolean {

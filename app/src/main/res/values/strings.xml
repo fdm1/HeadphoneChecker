@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">Headphone Checker</string>
     <string name="action_settings">Settings</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+<!--    Headphone statuses-->
+    <string name="using_speaker">Using speaker</string>
+    <string name="using_headphones">Using headphones</string>
+    <string name="using_unknown">Unknown audio output</string>
 </resources>
