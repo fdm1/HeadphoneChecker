@@ -3,17 +3,23 @@ package com.frankmassi.headphonechecker
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.widget.TextView
 import android.widget.Toast
 
 open class HeadsetStatusReceiver : BroadcastReceiver() {
 
     private var statusText: String? = null
+    private var textView: TextView? = null
 
     private fun setStatusText(text: String) {
-        statusText = text
+        this.statusText = text
     }
 
-    fun getStatusText(): String? {
+   fun setTextView(textView: TextView) {
+        this.textView = textView
+    }
+
+    private fun getStatusText(): String? {
         return statusText
     }
 
@@ -23,6 +29,7 @@ open class HeadsetStatusReceiver : BroadcastReceiver() {
             setStatusText(state)
             //      TODO: make a setting option for show toast
             showHeadphoneStatusToast(context)
+            updateTextView()
         }
     }
 
@@ -32,6 +39,10 @@ open class HeadsetStatusReceiver : BroadcastReceiver() {
             1 -> context.getString(R.string.using_headphones)
             else -> context.getString(R.string.using_unknown)
         }
+    }
+
+    private fun updateTextView() {
+        this.textView!!.text = getStatusText()
     }
 
     private fun showHeadphoneStatusToast(context: Context) {

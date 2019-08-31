@@ -9,18 +9,17 @@ import android.widget.TextView
 
 
 class MainActivity : AppCompatActivity() {
-    private var headphoneStatusReceiver: HeadphoneStatusIntentReceiver? = null
+    private var headphoneStatusReceiver: HeadsetStatusReceiver? = null
     private val headsetFilter = IntentFilter(Intent.ACTION_HEADSET_PLUG)
 
     private fun updateTextView() {
-        findViewById<TextView>(R.id.activity_main_headphone_status).text =
-            headphoneStatusReceiver!!.getStatusText()
+        headphoneStatusReceiver!!.setTextView(findViewById<TextView>(R.id.activity_main_headphone_status))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        headphoneStatusReceiver = HeadphoneStatusIntentReceiver()
+        headphoneStatusReceiver = HeadsetStatusReceiver()
         registerReceiver(headphoneStatusReceiver, headsetFilter)
         updateTextView()
     }
@@ -34,14 +33,5 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         registerReceiver(headphoneStatusReceiver, headsetFilter)
         updateTextView()
-    }
-
-    inner class HeadphoneStatusIntentReceiver : HeadsetStatusReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            super.onReceive(context, intent)
-            if (intent.action == Intent.ACTION_HEADSET_PLUG) {
-                updateTextView()
-            }
-        }
     }
 }
