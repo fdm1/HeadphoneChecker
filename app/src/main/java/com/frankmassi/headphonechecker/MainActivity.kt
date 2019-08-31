@@ -12,7 +12,7 @@ class MainActivity : AppCompatActivity() {
     private var headphoneStatusReceiver: HeadsetStatusReceiver? = null
     private val headsetFilter = IntentFilter(Intent.ACTION_HEADSET_PLUG)
 
-    private fun updateTextView() {
+    private fun setReceiverTextView() {
         headphoneStatusReceiver!!.setTextView(findViewById<TextView>(R.id.activity_main_headphone_status))
     }
 
@@ -20,8 +20,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         headphoneStatusReceiver = HeadsetStatusReceiver()
+        setReceiverTextView()
         registerReceiver(headphoneStatusReceiver, headsetFilter)
-        updateTextView()
     }
 
     override fun onDestroy() {
@@ -32,6 +32,5 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         registerReceiver(headphoneStatusReceiver, headsetFilter)
-        updateTextView()
     }
 }
